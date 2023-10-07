@@ -10,6 +10,14 @@ from everycheese.users.views import (
     UserUpdateView,
 )
 
+from everycheese.users.tests.factories import UserFactory
+
+@pytest.fixture
+def user():
+    return UserFactory()
+
+
+
 pytestmark = pytest.mark.django_db
 
 
@@ -77,3 +85,26 @@ class TestUserRedirectView:
         assert (
             view.get_redirect_url() == f"/users/{user.username}/"
         )
+
+def test_good_cheese_create_view(client, user):
+    # Make the client authenticate
+    client.force_login(user)
+    # Specify the URL of the view
+    url = reverse("cheeses:add")
+    # Use the client to make the request
+    response = client.get(url)
+    # Test that the response is valid
+    assert response.status_code == 200
+
+# def test_cheese_list_contains_2_cheeses(rf):
+#     # Let's create a couple cheeses
+#     cheese1 = CheeseFactory()
+#     cheese2 = CheeseFactory()
+#     # Create a request and then a response
+#     # for a list of cheeses
+#     request = rf.get(reverse('cheeses:list'))
+#     response = CheeseListView.as_view()(request)
+#     # Assert that the response contains both cheese names
+#     # in the template.
+#     assertContains(response, cheese1.name)
+#     assertContains(response, cheese2.name)
